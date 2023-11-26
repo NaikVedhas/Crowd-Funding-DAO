@@ -15,7 +15,7 @@ contract CrowdFunding {
         uint256 _target,
         uint256 _minContribution
     ) {
-        // Remeber time is in seconds
+        // Remmeber time is in seconds
 
         manager = msg.sender;
         deadline = block.timestamp + _deadline;
@@ -70,7 +70,7 @@ contract CrowdFunding {
         uint256 value; /// kitne money dene wale hai hum recepient ko
         bool compeleted; //To check if this request is complete or not
         uint256 noofVoters; // To check how many voted
-        mapping(address => bool) voters; //For storing the ones which have doine voting. we are storing yes or no for a specific address
+        mapping(address => bool) voters; //For storing the ones which have done voting. we are storing yes or no for a specific address
     }
 
     mapping(uint256 => request) public noofrequest; // THi one is storing the no fo requests. Eg- manager requested one for charity, one for business etc etc . So we are storing at different indexes the different request.
@@ -79,7 +79,7 @@ contract CrowdFunding {
 
     modifier onlyManager() {
         // INstead of modifier we can write this in our createrequest also
-        require(msg.sender == manager, "Only manager can call rgis function");
+        require(msg.sender == manager,"Only manager can call rgis function");
         _;
     }
 
@@ -89,7 +89,7 @@ contract CrowdFunding {
         uint256 _value
     ) public onlyManager {
         //This request can only be created by manager
-
+        // Basically uper jo struc banayahai na (request) that is like a class amd niche ka newRequest is like object of that class
         request storage newRequest = noofrequest[numrequest]; // So here we created a newreuest pf type request(so we wrote request storage newrequest) and stored it in our noofrequest mapping. numrequest is 0 initially and phir increment kiya.
         numrequest++;
         newRequest.description = _description;
@@ -115,5 +115,19 @@ contract CrowdFunding {
         thisRequest.noofVoters++;
     }
 
-    // Now if noofvotes
+    // Now if noofvotes are in favour of a particular request then we will give him money
+
+    function makepaymenttoRequest(uint _numrequest) public onlyManager 
+    {
+        require(target<raisedAmount,"Sorry target is not met yet");
+        request storage newrequest = noofrequest[_numrequest];
+        require(newrequest.compeleted== false,"Already money has been transfered");   // To check if money is already transfered 
+        require(newrequest.noofVoters > noofContributors/2,"Majority doesnt support");  // By this we checked that if majority has voted in favour or not because when we click vote then a positive vote is given
+        newrequest.recepient.transfer(newrequest.value);
+        newrequest.compeleted=  true;
+    }
+
+
+
+
 }
